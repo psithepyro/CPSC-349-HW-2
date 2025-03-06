@@ -1,4 +1,5 @@
 // To-Do
+
 const options = {
     method: 'GET',
     headers: {
@@ -7,11 +8,15 @@ const options = {
     }
 };
 
-async function fetchMovies() {
+let currentPage = 1;
+const totalPages = 12;
+
+async function fetchMovies(page = 1) {
     try {
-        const response = await fetch('https://api.themoviedb.org/3/movie/popular', options);
+        const response = await fetch(`https://api.themoviedb.org/3/movie/popular?page=${page}`, options);
         const data = await response.json();
         displayMovies(data.results);
+        document.querySelector('.pageNumber').textContent = page;
     } catch (error) {
         console.error(error);
     }   
@@ -38,4 +43,18 @@ function displayMovies(movies) {
     });
 }
 
-fetchMovies();
+document.getElementById('prevPage').addEventListener('click', () => {
+    if (currentPage > 1) {
+        currentPage--;
+        fetchMovies(currentPage);
+    }
+});
+
+document.getElementById('nextPage').addEventListener('click', () => {
+    if (currentPage < totalPages) {
+        currentPage++;
+        fetchMovies(currentPage);
+    }
+});
+
+fetchMovies(currentPage);
