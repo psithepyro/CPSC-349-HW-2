@@ -1,5 +1,4 @@
 // To-Do
-
 const options = {
     method: 'GET',
     headers: {
@@ -8,15 +7,35 @@ const options = {
     }
 };
 
-
 async function fetchMovies() {
     try {
         const response = await fetch('https://api.themoviedb.org/3/movie/popular', options);
         const data = await response.json();
-        console.log(data);
+        displayMovies(data.results);
     } catch (error) {
         console.error(error);
     }   
+}
+
+function displayMovies(movies) {
+    const movieContainer = document.querySelector('.movie-container');
+    movieContainer.innerHTML = ''; // Clear existing content
+
+    movies.forEach(movie => {
+        const movieElement = document.createElement('div');
+        movieElement.classList.add('movie-gallery');
+
+        movieElement.innerHTML = `
+            <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title} Poster">
+            <div class="movie-info">
+                <h2>${movie.title}</h2>
+                <p>Release Date: ${movie.release_date}</p>
+                <p>Rating: ${movie.vote_average}</p>
+            </div>
+        `;
+
+        movieContainer.appendChild(movieElement);
+    });
 }
 
 fetchMovies();
