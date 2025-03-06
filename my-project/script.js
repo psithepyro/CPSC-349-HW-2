@@ -8,6 +8,7 @@ const options = {
     }
 };
 
+
 async function fetchMovies() {
     try {
         const response = await fetch('https://api.themoviedb.org/3/movie/popular', options);
