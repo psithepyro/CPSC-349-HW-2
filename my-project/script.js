@@ -1,5 +1,11 @@
 // To-Do
 
+let currentPage = 1;
+let totalPages = 1;
+
+let currentQuery = '';
+let currentSort = 'popularity.desc';
+
 const options = {
     method: 'GET',
     headers: {
@@ -8,15 +14,20 @@ const options = {
     }
 };
 
-let currentPage = 1;
-const totalPages = 12;
-
-async function fetchMovies(page = 1) {
+async function fetchMovies(page = 1, query = '', sort = 'popularity.desc') {
     try {
-        const response = await fetch(`https://api.themoviedb.org/3/movie/popular?page=${page}`, options);
+        const url = query 
+            ? `https://api.themoviedb.org/3/search/movie?query=${query}&page=${page}&sort_by=${sort}`
+            : `https://api.themoviedb.org/3/movie/popular?page=${page}&sort_by=${sort}`;
+        const response = await fetch(url, options);
         const data = await response.json();
+
         displayMovies(data.results);
-        document.querySelector('.pageNumber').textContent = page;
+        if(totalPages === 1){
+            totalPages = data.total_pages;
+        }
+
+        document.querySelector('.pageNumber').textContent = `Page: ${page} of ${totalPages}`; // Update page number display
     } catch (error) {
         console.error(error);
     }   
@@ -55,6 +66,23 @@ document.getElementById('nextPage').addEventListener('click', () => {
         currentPage++;
         fetchMovies(currentPage);
     }
+});
+
+document.getElementById('search').addEventListener('input', (event) => {
+    currentQuery = event.target.value;
+    currentPage = 1;
+    fetchMovies(currentPage, currentQuery, currentSort);
+});
+
+document.querySelectorAll('.dropdown-content a').forEach(sortOption => {
+    sortOption.addEventListener('click', () => {
+        Event.preventDefault();
+        document.querySelector('.dropdown-content .active').classList.remove('active');
+        Event.target.classList.add('active');
+        currentSort = Event.target.getAttribute('data-sort');
+        currentPage = 1;
+        fetchMovies(currentPage, currentQuery, currentSort);
+    });
 });
 
 fetchMovies(currentPage);
