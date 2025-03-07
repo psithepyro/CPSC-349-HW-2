@@ -23,10 +23,7 @@ async function fetchMovies(page = 1, query = '', sort = 'popularity.desc') {
         const data = await response.json();
 
         displayMovies(data.results);
-        if(totalPages === 1){
-            totalPages = data.total_pages;
-        }
-
+                    totalPages = data.total_pages; // Update totalPages with the value from the API response
         document.querySelector('.pageNumber').textContent = `Page: ${page} of ${totalPages}`; // Update page number display
     } catch (error) {
         console.error(error);
@@ -57,30 +54,31 @@ function displayMovies(movies) {
 document.getElementById('prevPage').addEventListener('click', () => {
     if (currentPage > 1) {
         currentPage--;
-        fetchMovies(currentPage);
+        fetchMovies(currentPage, currentQuery, currentSort);
     }
 });
 
 document.getElementById('nextPage').addEventListener('click', () => {
     if (currentPage < totalPages) {
         currentPage++;
-        fetchMovies(currentPage);
+        fetchMovies(currentPage, currentQuery, currentSort);
     }
 });
 
 document.getElementById('search').addEventListener('input', (event) => {
     currentQuery = event.target.value;
-    currentPage = 1;
+    currentPage = 1; // Reset to first page
     fetchMovies(currentPage, currentQuery, currentSort);
 });
 
 document.querySelectorAll('.dropdown-content a').forEach(sortOption => {
-    sortOption.addEventListener('click', () => {
-        Event.preventDefault();
+    sortOption.addEventListener('click', (event) => {
+        event.preventDefault();
         document.querySelector('.dropdown-content .active').classList.remove('active');
-        Event.target.classList.add('active');
-        currentSort = Event.target.getAttribute('data-sort');
-        currentPage = 1;
+        event.target.classList.add('active');
+        currentSort = event.target.getAttribute('data-sort');
+        document.querySelector('.drop_btn').innerHTML = `${event.target.textContent.trim()} <i class="arrow down"></i>`; // Update dropdown button text
+        currentPage = 1; // Reset to first page
         fetchMovies(currentPage, currentQuery, currentSort);
     });
 });

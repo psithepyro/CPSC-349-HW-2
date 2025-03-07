@@ -52,6 +52,11 @@
     background-color: lightgray;
 }
 
+.active {
+    background-color: #91deff;
+    color: white;
+}
+
 
 .arrow {
     border: solid black;
@@ -109,7 +114,7 @@ html, body {
     padding: 10px;
     text-align: center;
     color: black;
-    width: 101.2%;
+    width: 101.25%;
 }
 
 #search {
