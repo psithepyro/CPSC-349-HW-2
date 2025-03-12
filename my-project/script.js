@@ -17,17 +17,37 @@ const options = {
 async function fetchMovies(page = 1, query = '', sort = 'popularity.desc') {
     try {
         const url = query 
-            ? `https://api.themoviedb.org/3/search/movie?query=${query}&page=${page}&sort_by=${sort}`
-            : `https://api.themoviedb.org/3/movie/popular?page=${page}&sort_by=${sort}`;
+            ? `https://api.themoviedb.org/3/search/movie?query=${query}&page=${page}`
+            : `https://api.themoviedb.org/3/movie/popular?page=${page}`;
+        console.log(`Fetching URL: ${url}`); // Debugging: Log the URL being fetched
         const response = await fetch(url, options);
         const data = await response.json();
+        console.log(`API Response:`, data); // Debugging: Log the API response
+        console.log(`Sorting Method:`, sort); //Debugging: Log the sorting method
 
-        displayMovies(data.results);
-                    totalPages = data.total_pages; // Update totalPages with the value from the API response
+        const sortedMovies = sortMovies(data.results, sort);
+        displayMovies(sortedMovies);
+        totalPages = data.total_pages; // Update totalPages with the value from the API response
         document.querySelector('.pageNumber').textContent = `Page: ${page} of ${totalPages}`; // Update page number display
     } catch (error) {
         console.error(error);
     }   
+}
+
+function sortMovies(movies, sort) {
+    switch (sort) {
+        case 'release_date.asc':
+            return movies.sort((a, b) => new Date(a.release_date) - new Date(b.release_date));
+        case 'release_date.desc':
+            return movies.sort((a, b) => new Date(b.release_date) - new Date(a.release_date));
+        case 'vote_average.asc':
+            return movies.sort((a, b) => a.vote_average - b.vote_average);
+        case 'vote_average.desc':
+            return movies.sort((a, b) => b.vote_average - a.vote_average);
+        case 'popularity.desc':
+        default:
+            return movies.sort((a, b) => b.popularity - a.popularity);
+    }
 }
 
 function displayMovies(movies) {
